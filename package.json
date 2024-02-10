@@ -1,0 +1,11 @@
+{
+  "name": "login-page",
+  "version": "0.0.1",
+  "description": "Movie Watching Project for Software Construction class (CS 372)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
