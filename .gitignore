@@ -130,3 +130,8 @@ dist
 .pnp.*
 
 tailwind.css
+
+*.json
+
+!package.json
+!package-lock.json
