@@ -1,26 +1,41 @@
-﻿<!DOCTYPE html>
-
-<html>
+﻿<html>
     <head>
-        <title>Login</title>
-        <link rel="stylesheet" type="text/css" href="./tailwind.css">
+        <link rel="stylesheet" href="login.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+        <title>
+            CS 372
+        </title>
     </head>
-    <body class="bg-black text-white">
-        <div class="h-screen flex text-xl justify-center items-center">
-            <form class="flex flex-col px-4 border-white space-y-2 justify-center">
-                <div class="flex w-full space-x-2 justify-between">
-                    <p class="text-right grow">Username</p>
-                    <input class="bg-black border rounded w-1/2 p-1" id="username" type="text"/>
+    <body>
+
+        <div class ="wrapper">
+            <form class ="form" id="Login">
+                <h1>Login/Signup</h1>
+                <div class="form__message form__message--error"></div>
+                <div class="input-box">
+                    <input type="text" class="form_input" id="user" placeholder="Username" required>
+                    <i class='bx bxs-user'></i>
                 </div>
-                <div class="flex w-full space-x-2 justify-between">
-                    <p class="text-right grow">Password</p>
-                    <input class="bg-black border rounded w-1/2 p-1" id="password" type="password"/>
+                <div class="form__message form__message--error"></div>
+                <div class="input-box">
+                    <input type="password" class="form_input" id="pass" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
                 </div>
-                <div class="flex gap-4">
-                    <button class="border rounded hover:bg-slate-600 p-2 grow">Login</button>
-                    <button class="border rounded hover:bg-slate-600 p-2 grow">Sign Up</button>
+
+                <div class="remember">
+                    <label><input type="checkbox"> Remember me</label>
+                </div>
+
+
+                <div class="login">
+                    <button type="submit" class="btn" button id = "log">Login</button>
+                </div>
+                <div class="signup">
+                    <button type="submit" class="btn" button id = "sign">Sign-Up</button>
                 </div>
             </form>
         </div>
+        <script src="login.js"></script>
     </body>
 </html>
