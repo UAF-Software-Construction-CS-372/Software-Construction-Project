@@ -1,3 +1,5 @@
+var logins_remaining = 5;
+
 function setFormMessage(formElement, type, message) {
     const messageElement = formElement.querySelector(".form__message");
 
@@ -10,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#Login");
     const all_buttons = document.querySelectorAll('.btn');
     let clickedButton = ""; 
+    var success = true;
     
     all_buttons.forEach(bt => {
         bt.addEventListener('mousedown', (a) => {
@@ -27,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         // Special Characters
-        let specialChars =/[`!@#$%^&*()_\-+=\[\]{};':"\\|,<>\/?~ ]/;
+        let specialChars = /[`!@#$%^&*()_\-+=\[\]{};':"\\|,<>\/?~ ]/;
 
         let numbers =/[0123456789]/;
 
@@ -42,12 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Username does not meet the criteria
             setFormMessage(loginForm, "error", "Invalid username. Please make sure it has at least 4 letters and exactly 1 underscore.");
             // Add counter (WIP)
+            console.log("Incorrect username");
+            success = false;
         }
 
         // Info Search, AJAX/Fetch (will look into what those two terms mean)
-        var password = document.getElementById("pass").value;
+        var password = document.getElementById("pass").value.toString();
         // Check if Username has at least 4 letters and exactly 1 underscore
-        if (password.length >= 8 && password.test(specialChars).length  && password.test(numbers).length === 3) {
+        if (password.length >= 8 && specialChars.test(password)  && numbers.test(password)) {
             // Username meets the criteria
             setFormMessage(loginForm, "success", "Password is valid.");
             // You can proceed with further actions here
@@ -55,7 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // Username does not meet the criteria
             setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, 1 special character, and 1 number.");
             // Add counter (WIP)
+            success = false;
+            console.log("Incorrect password");
         }
-        console.log(all_buttons);
+
+        if (success) {
+            console.log("Submitting form!");
+            if(clickedButton != "Login") {
+                loginForm.setAttribute('action', "/signup");   
+            }
+            loginForm.submit();
+        }
     });
 });
