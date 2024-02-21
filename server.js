@@ -20,7 +20,7 @@ app.post('/login', (req, res) => {
       console.log('data:' + JSON.stringify(d));
 
       if (d.pass === req.body.pass) {
-        res.sendFile(__dirname + '/public/success.html');
+        res.sendFile(__dirname + '/public/loginsuccess.html');
       } else {
         console.log(d.pass + '!=' + req.body.pass);
         if (d.incorrects > 1) {
@@ -34,7 +34,7 @@ app.post('/login', (req, res) => {
           });
         }
         
-        res.sendFile(__dirname + '/public/failure.html');
+        res.sendFile(__dirname + '/public/loginfailure.html');
       }
     }
   });
@@ -43,10 +43,13 @@ app.post('/login', (req, res) => {
 app.post('/signup', (req, res) => {
   console.log(`${req.body.user} ${req.body.pass}.`);
   var f = {user: req.body.user, pass: req.body.pass, incorrects: 5};
+  if (fs.existsSync(`${req.body.user}.json`)) {
+    res.sendFile(__dirname + '/public/signupfailure.html');
+  }
   fs.writeFile(`${req.body.user}.json`, JSON.stringify(f), (err) => {
     console.log(err);
   });
-  res.redirect('/');
+  res.sendFile(__dirname + '/public/signupsuccess.html');
 });
 
 app.listen(port, () => {
