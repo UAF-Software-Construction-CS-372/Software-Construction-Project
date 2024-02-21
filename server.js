@@ -14,6 +14,7 @@ app.post('/login', (req, res) => {
   fs.readFile(`${req.body.user}.json`, 'utf8', (err, data) => {
     if (err) {
       console.log(err);
+      res.sendFile(__dirname + '/public/failure.html');
     } else {
       let d = JSON.parse(data);
       console.log('data:' + JSON.stringify(d));
@@ -22,8 +23,18 @@ app.post('/login', (req, res) => {
         res.sendFile(__dirname + '/public/success.html');
       } else {
         console.log(d.pass + '!=' + req.body.pass);
-        console.log('Bad!');
-        res.redirect('/');
+        if (d.incorrects > 1) {
+          var f = {user: d.user, pass: d.pass, incorrects: d.incorrects - 1};
+          fs.writeFile(`${d.user}.json`, JSON.stringify(f), (err) => {
+            console.log(err);
+          });
+        } else {
+          fs.rmSync(`${d.user}.json`, {
+            force: true,
+          });
+        }
+        
+        res.sendFile(__dirname + '/public/failure.html');
       }
     }
   });
@@ -31,7 +42,7 @@ app.post('/login', (req, res) => {
 
 app.post('/signup', (req, res) => {
   console.log(`${req.body.user} ${req.body.pass}.`);
-  var f = {user: req.body.user, pass: req.body.pass};
+  var f = {user: req.body.user, pass: req.body.pass, incorrects: 5};
   fs.writeFile(`${req.body.user}.json`, JSON.stringify(f), (err) => {
     console.log(err);
   });
