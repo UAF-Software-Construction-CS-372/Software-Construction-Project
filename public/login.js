@@ -32,12 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Special Characters
         let specialChars = /[`!@#$%^&*()_\-+=\[\]{};':"\\|,<>\/?~ ]/;
 
+        let uppercase = /[A-Z]/;
+
         let numbers =/[0123456789]/;
 
         // Info Search, AJAX/Fetch (will look into what those two terms mean)
         var username = document.getElementById("user").value;
         // Check if Username has at least 4 letters and exactly 1 underscore
-        if (username.length >= 4 && username.split("_").length === 2) {
+        if (username.length >= 4 && username.split("_").length === 2 && !uppercase.test(username)) {
             // Username meets the criteria
             setFormMessage(loginForm, "success", "Username is valid.");
             // You can proceed with further actions here
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Add counter (WIP)
             console.log("Incorrect username");
             success = false;
+            return;
         }
 
         // Info Search, AJAX/Fetch (will look into what those two terms mean)
@@ -58,10 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // You can proceed with further actions here
         } else {
             // Username does not meet the criteria
-            setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, 1 special character, and 1 number.");
+            setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, all lowercase, 1 special character, and 1 number.");
             // Add counter (WIP)
             success = false;
             console.log("Incorrect password");
+            return;
         }
 
         if (success) {
