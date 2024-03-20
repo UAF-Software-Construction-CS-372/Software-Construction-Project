@@ -14,7 +14,7 @@ app.post('/login', (req, res) => {
   fs.readFile(`${req.body.user}.json`, 'utf8', (err, data) => {
     if (err) {
       console.log(err);
-      res.sendFile(__dirname + '/public/failure.html');
+      res.sendFile(__dirname + '/public/loginfailure.html');
     } else {
       let d = JSON.parse(data);
       console.log('data:' + JSON.stringify(d));
