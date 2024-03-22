@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             // Username does not meet the criteria
             setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, all lowercase, 1 special character, and 1 number.");
-            // Add counter (WIP)
             success = false;
             console.log("Incorrect password");
             return;
