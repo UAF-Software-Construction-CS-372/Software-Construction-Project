@@ -1,5 +1,3 @@
-var logins_remaining = 5;
-
 function setFormMessage(formElement, type, message) {
     const messageElement = formElement.querySelector(".form__message");
 

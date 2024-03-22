@@ -99,6 +99,5 @@ app.post('/signup', parser, async (req, res) => {
 });
 
 app.listen(port, async () => {
-
   console.log(`Server running on port ${port}`);
 });
