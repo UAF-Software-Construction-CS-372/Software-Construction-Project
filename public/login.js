@@ -67,10 +67,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (success) {
             console.log("Submitting form!");
-            if(clickedButton != "Login") {
+            if (clickedButton != "Login") {
                 loginForm.setAttribute('action', "/signup");   
+            } else {
+                loginForm.setAttribute('action', "/login");
             }
-            loginForm.submit();
+
+            // Use fetch to send the form data
+            fetch(loginForm.getAttribute('action'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(loginForm))
+            })
+            .then(async data => {
+                const headers = data.headers;
+
+                if (headers.get('Content-Type').includes('text/html')) {
+                    document.body.innerHTML = await data.text();
+                } else {
+                    console.log(await data.text());
+                }
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error('Error:', error);
+            });
         }
     });
 });
