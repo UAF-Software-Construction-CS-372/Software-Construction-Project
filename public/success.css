@@ -22,3 +22,24 @@ body {
     text-align: center;
     margin-bottom: 100px;
 }
+
+#button {
+    width: 6em;
+    border: 2px solid green;
+    background: #ffe;
+    border-radius: 5px;
+    margin-bottom: 60px;
+    margin-left: 200px;
+}
+a {
+    display: block;
+    width: 100%;
+    line-height: 2em;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+a:hover {
+    color: red;
+    background: rgb(255, 255, 255);
+}
