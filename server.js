@@ -1,57 +1,86 @@
 ﻿const express = require('express');
-const fs = require('fs');
 const bodyParser = require('body-parser');
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const cors = require('cors');
+const mongoose = require('mongoose');
 
 const port = 8080;
 const app = express();
+const mongo_uri = "mongodb://localhost:27017/movies";
 
-app.use(bodyParser.urlencoded({ extended: true })); 
+var parser = bodyParser.urlencoded({ extended: false });
 
-app.use(express.static("public"));
+const user_schema = new mongoose.Schema({
+  user: {type: String, required: true, minLength: 4, lowercase: true, unique: true},
+  pass: {type: String, required: true, minLength: 8},
+  incorrects: {type: Number, required: true}
+});
 
-app.post('/login', (req, res) => {
+const User = mongoose.model('user', user_schema);
+
+app.use(express.static("public"), cors({origin:'*'}));
+
+app.post('/login', parser, async (req, res) => {
   console.log('req.body:' + JSON.stringify(req.body));
-  fs.readFile(`${req.body.user}.json`, 'utf8', (err, data) => {
-    if (err) {
-      console.log(err);
-      res.sendFile(__dirname + '/public/loginfailure.html');
-    } else {
-      let d = JSON.parse(data);
-      console.log('data:' + JSON.stringify(d));
 
-      if (d.pass === req.body.pass) {
-        res.sendFile(__dirname + '/public/loginsuccess.html');
-      } else {
-        console.log(d.pass + '!=' + req.body.pass);
-        if (d.incorrects > 1) {
-          var f = {user: d.user, pass: d.pass, incorrects: d.incorrects - 1};
-          fs.writeFile(`${d.user}.json`, JSON.stringify(f), (err) => {
-            console.log(err);
-          });
-        } else {
-          fs.rmSync(`${d.user}.json`, {
-            force: true,
-          });
-        }
-        
-        res.sendFile(__dirname + '/public/loginfailure.html');
-      }
-    }
-  });
-});
-
-app.post('/signup', (req, res) => {
-  console.log(`${req.body.user} ${req.body.pass}.`);
-  var f = {user: req.body.user, pass: req.body.pass, incorrects: 5};
-  if (fs.existsSync(`${req.body.user}.json`)) {
-    res.sendFile(__dirname + '/public/signupfailure.html');
+  // Check if user already exists
+  const found = await User.find({user: req.body.user});
+  console.log('found:' + JSON.stringify(found));
+  if (found.length !== 1) {
+    res.set('Content-Type', 'text/plain');
+    res.send('Login fail!');
+    return;
   }
-  fs.writeFile(`${req.body.user}.json`, JSON.stringify(f), (err) => {
-    console.log(err);
-  });
-  res.sendFile(__dirname + '/public/signupsuccess.html');
+
+  const user = found[0];
+
+  if (user.pass !== req.body.pass) {
+    if (user.incorrects > 1) {
+      await User.updateOne({user: user.user}, {$set: {incorrects: user.incorrects - 1}});
+    } else {
+      await User.deleteOne({user: user.user});
+    }
+    res.set('Content-Type', 'text/plain');
+    res.send('Login fail!')
+    return;
+  }
+  console.log('user:' + JSON.stringify(user));
+  res.set('Content-Type', 'text/plain');
+  res.send('Login success!');
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.post('/signup', parser, async (req, res) => {
+  console.log('Signup: ' + JSON.stringify(req.body));
+
+  // Check if user already exists
+  const found = await User.find({user: req.body.user});
+  if (found.length != 0) {
+    res.set('Content-Type', 'text/plain');
+    res.send('Sign up fail! other ones found');
+    return;
+  }
+
+  // Create new user
+  const new_user = new User({
+    user: req.body.user,
+    pass: req.body.pass,
+    incorrects: 5
+  });
+
+  // Push user to database
+  await new_user.save();
+  res.set('Content-Type', 'text/plain');
+  res.send('Sign up success!');
+});
+
+app.listen(port, async () => {
+  try {
+      console.log('Connecting to MongoDB...');
+      await mongoose.connect(mongo_uri);
+      console.log('Successfully connected to MongoDB!');
+  } catch (error) {
+      console.error('Connection to MongoDB failed!', error);
+      process.exit();
+  }
+    console.log(`Server running on port ${port}`);
 });

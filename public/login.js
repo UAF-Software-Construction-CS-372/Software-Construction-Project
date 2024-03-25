@@ -1,5 +1,3 @@
-var logins_remaining = 5;
-
 function setFormMessage(formElement, type, message) {
     const messageElement = formElement.querySelector(".form__message");
 
@@ -62,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             // Username does not meet the criteria
             setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, all lowercase, 1 special character, and 1 number.");
-            // Add counter (WIP)
             success = false;
             console.log("Incorrect password");
             return;
@@ -70,10 +67,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (success) {
             console.log("Submitting form!");
-            if(clickedButton != "Login") {
+            if (clickedButton != "Login") {
                 loginForm.setAttribute('action', "/signup");   
+            } else {
+                loginForm.setAttribute('action', "/login");
             }
-            loginForm.submit();
+
+            // Use fetch to send the form data
+            fetch(loginForm.getAttribute('action'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(loginForm))
+            })
+            .then(async data => {
+                const headers = data.headers;
+
+                if (headers.get('Content-Type').includes('text/html')) {
+                    document.body.innerHTML = await data.text();
+                } else {
+                    console.log(await data.text());
+                }
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error('Error:', error);
+            });
         }
     });
 });
