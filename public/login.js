@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#Login");
     const all_buttons = document.querySelectorAll('.btn');
     let clickedButton = ""; 
+    var success = true;
     
     all_buttons.forEach(bt => {
         bt.addEventListener('mousedown', (a) => {
@@ -27,14 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         // Special Characters
-        let specialChars =/[`!@#$%^&*()_\-+=\[\]{};':"\\|,<>\/?~ ]/;
+        let specialChars = /[`!@#$%^&*()_\-+=\[\]{};':"\\|,<>\/?~ ]/;
+
+        let uppercase = /[A-Z]/;
 
         let numbers =/[0123456789]/;
 
         // Info Search, AJAX/Fetch (will look into what those two terms mean)
         var username = document.getElementById("user").value;
         // Check if Username has at least 4 letters and exactly 1 underscore
-        if (username.length >= 4 && username.split("_").length === 2) {
+        if (username.length >= 4 && username.split("_").length === 2 && !uppercase.test(username)) {
             // Username meets the criteria
             setFormMessage(loginForm, "success", "Username is valid.");
             // You can proceed with further actions here
@@ -42,20 +45,55 @@ document.addEventListener("DOMContentLoaded", () => {
             // Username does not meet the criteria
             setFormMessage(loginForm, "error", "Invalid username. Please make sure it has at least 4 letters and exactly 1 underscore.");
             // Add counter (WIP)
+            console.log("Incorrect username");
+            success = false;
+            return;
         }
 
         // Info Search, AJAX/Fetch (will look into what those two terms mean)
-        var password = document.getElementById("pass").value;
+        var password = document.getElementById("pass").value.toString();
         // Check if Username has at least 4 letters and exactly 1 underscore
-        if (password.length >= 8 && password.test(specialChars).length  && password.test(numbers).length === 3) {
+        if (password.length >= 8 && specialChars.test(password)  && numbers.test(password)) {
             // Username meets the criteria
             setFormMessage(loginForm, "success", "Password is valid.");
             // You can proceed with further actions here
         } else {
             // Username does not meet the criteria
-            setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, 1 special character, and 1 number.");
-            // Add counter (WIP)
+            setFormMessage(loginForm, "error", "Invalid password. Please make sure it has at least 8 letters, all lowercase, 1 special character, and 1 number.");
+            success = false;
+            console.log("Incorrect password");
+            return;
         }
-        console.log(all_buttons);
+
+        if (success) {
+            console.log("Submitting form!");
+            if (clickedButton != "Login") {
+                loginForm.setAttribute('action', "/signup");   
+            } else {
+                loginForm.setAttribute('action', "/login");
+            }
+
+            // Use fetch to send the form data
+            fetch(loginForm.getAttribute('action'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(loginForm))
+            })
+            .then(async data => {
+                const headers = data.headers;
+
+                if (headers.get('Content-Type').includes('text/html')) {
+                    document.body.innerHTML = await data.text();
+                } else {
+                    console.log(await data.text());
+                }
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error('Error:', error);
+            });
+        }
     });
 });
