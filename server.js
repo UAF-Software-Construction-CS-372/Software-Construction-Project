@@ -46,7 +46,9 @@ app.post('/login', parser, async (req, res) => {
   }
   console.log('user:' + JSON.stringify(user));
   res.set('Content-Type', 'text/plain');
-  res.send('Login success!');
+  //res.send('Login success!');
+  res.sendFile(__dirname + '/public/movieFE.html');
+  return res.redirect('/movieFE.html');
 });
 
 app.post('/signup', parser, async (req, res) => {
