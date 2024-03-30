@@ -11,6 +11,8 @@ function addLike(){
   result.innerHTML = localStorage.getItem('likes');
 }
 
+const url = '/play-movie'; // Replace this with your API endpoint URL
+
 // Data to be sent
 const data = {
     key1: 'value1',
@@ -21,14 +23,14 @@ const data = {
 const options = {
     method: 'POST', // HTTP method (e.g., GET, POST, PUT, DELETE)
     headers: {
-        'Content-Type': 'application/json' // Specify content type
+        'Content-Type': 'likes', // Specify content type
         // Add any additional headers if needed
     },
     body: JSON.stringify(data) // Convert data to JSON string
 };
 
-// Send the fetch request to the same origin
-self.fetch(self.origin, options)
+// Send the fetch request
+fetch(url, options)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -37,7 +39,7 @@ self.fetch(self.origin, options)
     })
     .then(data => {
         // Handle the response data
-        console.log('Response received:', data);
+        console.log('Response received:', data2);
     })
     .catch(error => {
         // Handle errors
@@ -76,6 +78,8 @@ function addComment(ev) {
     
 }
 
+const url2 = '/play-movie'; // Replace this with your API endpoint URL
+
 // Data to be sent
 const data2 = {
     key1: 'value1',
@@ -86,14 +90,14 @@ const data2 = {
 const options2 = {
     method: 'POST', // HTTP method (e.g., GET, POST, PUT, DELETE)
     headers: {
-        'Content-Type': 'application/json', // Specify content type
+        'Content-Type': 'commments', // Specify content type
         // Add any additional headers if needed
     },
     body: JSON.stringify(data) // Convert data to JSON string
 };
 
 // Send the fetch request
-fetch(options2)
+fetch(url2, options2)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
