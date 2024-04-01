@@ -1,6 +1,5 @@
 ﻿const express = require('express');
 const bodyParser = require('body-parser');
-const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require('cors');
 const mongoose = require('mongoose');
 const fs = require('fs');
@@ -28,6 +27,7 @@ const movie_schema = new mongoose.Schema({
   link: {type: String, required: true},
   ratings: {type: Array, required: false},
   feedback: {type: String, required: false},
+  comments: {type: Array, required: false},
 });
 
 const Movie = mongoose.model('movie', movie_schema);
