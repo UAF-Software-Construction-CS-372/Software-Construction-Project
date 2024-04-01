@@ -96,7 +96,7 @@ app.post('/movie-add', parser, async (req, res) => {
   
     // Push user to database
     await new_movie.save();
-    res.sendFile(__dirname + 'public/movies_control/add_movies.html');
+    res.status(200).json({success: true, message: `Movie ${req.body.title} added!`}).send();
 });
 
 app.post('/movie-delete', parser, async (req, res) => {
@@ -106,7 +106,7 @@ app.post('/movie-delete', parser, async (req, res) => {
 });
 
 app.get('/add', parser , async (req, res) => {
-  res.sendFile(__dirname + '/public/movies_control/add_movies.html');
+  res.sendFile(__dirname + '/public/movies_control/control_movies.html');
 });
 
 app.post('/play-movie', parser, async (req, res) => {
