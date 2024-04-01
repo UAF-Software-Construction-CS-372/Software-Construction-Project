@@ -9,15 +9,34 @@
         <iframe width="560" height="315" id="player" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
         <!-- Comments -->
-        <div class="container">
-            <label for="newComment" name="newComment">Add your comment below-</label>
-            <textarea id="newComment"></textarea>
-            <button id="addComments">Add Comment</button>
-            <div id="allComments"></div>
-        </div>
+        <form id="myForm">
+            Full name: <input id="userName" type="text" name="fname">
+            <br><br>
+            <textarea id ="userComment" rows="4" cols="50" name="comment" placeholder="Add Your Comment"></textarea>
+            <br><br>
+            <input type="button" onclick="myFunction()" value="Submit">
+        </form>
+        <br><br>
+        <h5>Comments</h5>
+        <br>
+        <textarea id="data" rows="4" cols="50"></textarea>
+        <script>
+        function myFunction(){
+            let data = "";  let name = document.getElementById("userName").value
+            let comment = document.getElementById("userComment").value
+             
+            data =name+": "+comment
+             
+            document.getElementById("data").innerHTML = data  // display data to paragraph
+        }
+        </script>
 
+        <br><br>
         <!-- Like Button -->
-        <button id="like">LIKE</button>
-        <p id="result"></p>
+        <p>
+            <a href="#" title="Love it" class="btn btn-counter" data-count="0">
+                <span>&#x2764;</span>
+            </a>
+        </p>
     </body>
 </html>

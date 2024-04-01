@@ -96,7 +96,7 @@ app.post('/movie-add', parser, async (req, res) => {
   
     // Push user to database
     await new_movie.save();
-    res.sendFile(__dirname + 'public/movies_control/add_movies.html');
+    res.sendFile(__dirname + '/public/movies_control/add_movies.html');
 });
 
 app.post('/movie-delete', parser, async (req, res) => {
