@@ -9,27 +9,33 @@
         <iframe width="560" height="315" id="player" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
         <!-- Comments -->
-        <form id="myForm">
-            Full name: <input id="userName" type="text" name="fname">
-            <br><br>
-            <textarea id ="userComment" rows="4" cols="50" name="comment" placeholder="Add Your Comment"></textarea>
-            <br><br>
-            <input type="button" onclick="myFunction()" value="Submit">
-        </form>
-        <br><br>
-        <h5>Comments</h5>
+        <div id="comment-container">
+            <!-- Existing comments will go here -->
+        </div>
+        <textarea name="" id="new-comment" cols="60" rows="5"></textarea>
         <br>
-        <textarea id="data" rows="4" cols="50"></textarea>
+        <button id="btn-post">Post</button>
         <script>
-        function myFunction(){
-            let data = "";  let name = document.getElementById("userName").value
-            let comment = document.getElementById("userComment").value
-             
-            data =name+": "+comment
-             
-            document.getElementById("data").innerHTML = data  // display data to paragraph
-        }
-        </script>
+            // Step 1: Add an event listener to the "Post" button
+            document.getElementById("btn-post").addEventListener("click", function () {
+            // This line sets up an event listener for the click event on the "Post" button.
+            // When the button is clicked, the function provided as the second argument will run.
+        
+            // Step 2: Get the comment from the textarea
+            const newComment = document.getElementById("new-comment").value;
+        
+            // Step 3: Create a new paragraph element for the comment
+            const commentContainer = document.getElementById("comment-container");
+            const commentElement = document.createElement("p");
+            commentElement.innerText = newComment;
+        
+            // Step 4: Append the comment to the comment container
+            commentContainer.appendChild(commentElement);
+        
+            // Clear the textarea after posting the comment
+            document.getElementById("new-comment").value = "";
+            });
+            </script>
 
         <br><br>
         <!-- Like Button -->

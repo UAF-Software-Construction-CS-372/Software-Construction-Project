@@ -1,26 +1,15 @@
-$('.btn-counter').on('click', function(event, count) {
-    event.preventDefault();
-    
-    var $this = $(this),
-        count = $this.attr('data-count'),
-        active = $this.hasClass('active'),
-        multiple = $this.hasClass('multiple-count');
-    
-    // First method, allows to add custom function
-    // Use when you want to do an ajax request
-    /* if (multiple) {
-    $this.attr('data-count', ++count);
-    // Your code here
-    } else {
-    $this.attr('data-count', active ? --count : ++count).toggleClass('active');
-    // Your code here
-    } */
-    
-    // Second method, use when ... I dunno when but it looks cool and that's why it is here
-    $.fn.noop = $.noop;
-    $this.attr('data-count', ! active || multiple ? ++count : --count  )[multiple ? 'noop' : 'toggleClass']('active');
-    
-  });
+let btn = document.querySelector('#like');
+let result = document.querySelector('#result');
+
+localStorage.setItem('likes', 0);
+result.innerHTML = localStorage.getItem('likes');
+
+btn.addEventListener('click', addLike());
+
+function addLike(){
+  localStorage.setItem('likes',  parseInt(localStorage.getItem('likes')) + 1);
+  result.innerHTML = localStorage.getItem('likes');
+}
 
 const url = '/play-movie'; // Replace this with your API endpoint URL
 
@@ -61,37 +50,33 @@ fetch(url, options)
 
 
 
-    const field = document.querySelector('textarea');
-    const backUp = field.getAttribute('placeholder')
-    const submit = document.querySelector('#submit')
-    // const comments = document.querySelector('#comment-box')
-    const comments = document.getElementById('comment-box');
+const commentContainer = document.getElementById('allComments');
+document.getElementById('addComments').addEventListener('click', function (ev) {
+   addComment(ev);
+});
+
+function addComment(ev) {
+    let commentText;
+    const textBox = document.createElement('div');
+    const replyButton = document.createElement('button');
+    replyButton.className = 'reply';
+    replyButton.innerHTML = 'Reply';
+    const likeButton = document.createElement('button');
+    likeButton.innerHTML = 'Like';
+    likeButton.className = 'likeComment';
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.className = 'deleteComment';
+    const wrapDiv = document.createElement('div');
+    wrapDiv.className = 'wrapper';
+    wrapDiv.style.marginLeft = 0;
+    commentText = document.getElementById('newComment').value;
+    document.getElementById('newComment').value = '';
+    textBox.innerHTML = commentText;
+    wrapDiv.append(textBox, replyButton, likeButton, deleteButton);
+    commentContainer.appendChild(wrapDiv);
     
-    // array to store the comments
-    const comments_arr = [];
-    
-    // to generate html list based on comments array
-    const display_comments = () => {
-      let list = '<ul>';
-       comments_arr.forEach(comment => {
-        list += `<li>${comment}</li>`;
-      })
-      list += '</ul>';
-      comments.innerHTML = list;
-    }
-    
-    submit.onclick = function(event){
-        event.preventDefault();
-        const content = field.value;
-        if(content.length > 0){ // if there is content
-          // add the comment to the array
-          comments_arr.push(content);
-          // re-genrate the comment html list
-          display_comments();
-          // reset the textArea content 
-          field.value = '';
-        }
-    }
+}
 
 const url2 = '/play-movie'; // Replace this with your API endpoint URL
 
