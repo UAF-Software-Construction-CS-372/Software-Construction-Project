@@ -14,7 +14,7 @@
         })
         .then(async data => {
             const response = await data.json();
-            if (!response.success) {
+            if (response.message !== null) {
                 alert(response.message);
             }
             console.log(response);

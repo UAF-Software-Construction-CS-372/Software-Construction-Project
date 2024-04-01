@@ -101,7 +101,7 @@ app.post('/movie-add', parser, async (req, res) => {
 
 app.post('/movie-delete', parser, async (req, res) => {
   console.log(`Recieved movie deletion request: ${JSON.stringify(req.body)}`)
-  Movie.deleteOne({title: req.body.title});
+  await Movie.deleteMany({title: req.body.title});
   res.status(200).json({success: true, message: `Movie ${req.body.title} deleted!`}).send();
 });
 
