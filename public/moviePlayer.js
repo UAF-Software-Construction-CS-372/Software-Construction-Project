@@ -11,10 +11,9 @@ function addLike(){
   result.innerHTML = localStorage.getItem('likes');
 }
 
-// URL of the server endpoint you want to send data to
-const url = 'https://example.com/api/endpoint';
+const url = '/play-movie'; // Replace this with your API endpoint URL
 
-// Data to be sent (replace this with your actual data)
+// Data to be sent
 const data = {
     key1: 'value1',
     key2: 'value2'
@@ -24,7 +23,7 @@ const data = {
 const options = {
     method: 'POST', // HTTP method (e.g., GET, POST, PUT, DELETE)
     headers: {
-        'Content-Type': 'application/json' // Specify content type
+        'Content-Type': 'likes', // Specify content type
         // Add any additional headers if needed
     },
     body: JSON.stringify(data) // Convert data to JSON string
@@ -40,12 +39,13 @@ fetch(url, options)
     })
     .then(data => {
         // Handle the response data
-        console.log('Response received:', data);
+        console.log('Response received:', data2);
     })
     .catch(error => {
         // Handle errors
         console.error('There was a problem with the fetch operation:', error);
     });
+
 
 
 
@@ -78,7 +78,7 @@ function addComment(ev) {
     
 }
 
-const url2 = 'https://example.com/api/endpoint'; // Replace this with your API endpoint URL
+const url2 = '/play-movie'; // Replace this with your API endpoint URL
 
 // Data to be sent
 const data2 = {
@@ -90,7 +90,7 @@ const data2 = {
 const options2 = {
     method: 'POST', // HTTP method (e.g., GET, POST, PUT, DELETE)
     headers: {
-        'Content-Type': 'application/json', // Specify content type
+        'Content-Type': 'commments', // Specify content type
         // Add any additional headers if needed
     },
     body: JSON.stringify(data) // Convert data to JSON string
