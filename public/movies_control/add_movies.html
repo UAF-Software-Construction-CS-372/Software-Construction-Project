@@ -1,0 +1,17 @@
+﻿<html>
+    <head>
+        <link rel="stylesheet" href="add_movies.css">
+
+        <title>
+            CS 372 - Add movies!
+        </title>
+    </head>
+
+    <form class="form" id="put_movie" action="/movie-add" method="post">
+        <input type="text" class="form_input" id="title" name="title" placeholder="Title" required/>
+        <input type="text" class="form_input" id="genre" name="genre" placeholder="Genre" required/>
+        <input type="text" class="form_input" id="link" name="link" placeholder="Link" required/>
+        <button type="submit" class="btn" id="add">Add Movie</button>
+    </form>
+    <script src='movies_control/add.js'></script>
+</html>

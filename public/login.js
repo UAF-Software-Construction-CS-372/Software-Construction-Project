@@ -87,7 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (headers.get('Content-Type').includes('text/html')) {
                     document.body.innerHTML = await data.text();
                 } else {
-                    console.log(await data.text());
+                    const response = await data.json();
+                    if (!response.success) {
+                        alert(response.message);
+                    }
+                    console.log(response);
                 }
             })
             .catch(error => {

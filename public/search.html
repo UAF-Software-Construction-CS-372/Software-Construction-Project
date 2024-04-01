@@ -8,11 +8,11 @@
     <body>
         <h1>Search</h1>
         <br><br>
-        <div class="inputContainer">
-            <input type="text" id="searchInput" placeholder="Search for a movie">
+        <form class="inputContainer" action="/play-movie" method="post">
+            <input type="text" id="title" name="title" placeholder="Search for a movie">
             <button id="searchButton">Search</button>
-        </div>
-        <div class="results"></div>
-        <hr>
+        </form>
+        <!-- div class="results"></div -->
+        <script src="search.js"/>
     </body>
 </html>
