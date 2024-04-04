@@ -109,6 +109,36 @@ app.get('/add', parser , async (req, res) => {
   res.sendFile(__dirname + '/public/movies_control/add_movies.html');
 });
 
+app.post('movie-likes', parser , async (req, res) => {
+  console.log('Add new like ')
+  
+  const new_like = new Like({
+    new_like : new_like +1
+  })
+
+  await new_like.save();
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+})
+
+app.get('/likes', parser, async (req, res) => {
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+});
+
+app.post('movie-comments', parser , async (req, res) => {
+  console.log('Add new comment ')
+  
+  const new_comment = new Comment({
+    comment: req.body.comment
+  })
+
+  await new_like.save();
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+})
+
+app.get('/comments', parser, async (req, res) => {
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+});
+
 app.post('/play-movie', parser, async (req, res) => {
   // Verify we have the movie
   const found = await Movie.find({title: req.body.title});
