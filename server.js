@@ -110,8 +110,8 @@ app.get('/add', parser , async (req, res) => {
   res.sendFile(__dirname + '/public/movies_control/add_movies.html');
 });
 
-app.post('movie-likes', parser , async (req, res) => {
-  console.log('Add new like ')
+app.post('/movie-likes', parser , async (req, res) => {
+  console.log(`Add new like`)
 
   const movie_like = await Movie.find({
     title: req.body.title
@@ -122,14 +122,15 @@ app.post('movie-likes', parser , async (req, res) => {
     return;
   }
 
-  if (movie.likes.has(req.body.user))
+  if (movie_like.likes.has(req.body.user))
   {
     res.status(400).json({success: false, message: 'User has already liked this video.'}).send();
     return;
   }
 
   await movie_like.save();
-  movie.likes.push(req.body.user);
+  movie_like.likes.push(req.body.user);
+  console.log(`New like added.`);
   res.status(200).json({success: true}).send();
 });
 
@@ -138,7 +139,7 @@ app.get('/likes', parser, async (req, res) => {
 });
 
 app.post('movie-comments', parser , async (req, res) => {
-  console.log('Add new comment ')
+  console.log(`Add new comment`)
   
   const new_comment = new Comment({
     comment: req.body.comment
