@@ -25,7 +25,7 @@ const movie_schema = new mongoose.Schema({
   title: {type: String, required: true},
   genre: {type: String, required: true},
   link: {type: String, required: true},
-  ratings: {type: Array, required: false},
+  likes: {type: Array, required: false},
   feedback: {type: String, required: false},
   comments: {type: Array, required: false},
 });
@@ -92,6 +92,7 @@ app.post('/movie-add', parser, async (req, res) => {
       title: req.body.title,
       genre: req.body.genre,
       link: req.body.link,
+      likes: [],
     });
   
     // Push user to database
@@ -107,6 +108,49 @@ app.post('/movie-delete', parser, async (req, res) => {
 
 app.get('/add', parser , async (req, res) => {
   res.sendFile(__dirname + '/public/movies_control/control_movies.html');
+});
+
+app.post('/movie-likes', parser , async (req, res) => {
+  console.log(`Add new like`)
+
+  const movie_like = await Movie.find({
+    title: req.body.title
+  });
+
+  if (movie_like.length != 1){
+    res.status(400).json({success: false, message: 'Can not find movie.'}).send();
+    return;
+  }
+
+  if (movie_like.likes.has(req.body.user))
+  {
+    res.status(400).json({success: false, message: 'User has already liked this video.'}).send();
+    return;
+  }
+
+  await movie_like.save();
+  movie_like.likes.push(req.body.user);
+  console.log(`New like added.`);
+  res.status(200).json({success: true}).send();
+});
+
+app.get('/likes', parser, async (req, res) => {
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+});
+
+app.post('movie-comments', parser , async (req, res) => {
+  console.log(`Add new comment`)
+  
+  const new_comment = new Comment({
+    comment: req.body.comment
+  })
+
+  await new_comment.save();
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+})
+
+app.get('/comments', parser, async (req, res) => {
+  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
 });
 
 app.post('/play-movie', parser, async (req, res) => {
