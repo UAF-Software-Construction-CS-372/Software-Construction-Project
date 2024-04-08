@@ -1,0 +1,28 @@
+﻿<html>
+    <head>
+        <link rel="stylesheet" href="movies_control/control_movies.css">
+
+        <title>
+            CS 372 - Add movies!
+        </title>
+    </head>
+
+    <body>
+        <h1>Add Movies</h1>
+        <form class="form" id="put_movie" action="/movie-add" method="post">
+            <input type="text" class="form_input" id="title" name="title" placeholder="Title" required/>
+            <input type="text" class="form_input" id="genre" name="genre" placeholder="Genre" required/>
+            <input type="text" class="form_input" id="link" name="link" placeholder="Link" required/>
+            <button type="submit" class="btn" id="add">Add Movie</button>
+        </form>
+        <h1>Remove Movies</h1>
+        <form class="form" id="delete_movie" action="/movie-delete" method="post">
+            <input type="text" class="form_input" id="title" name="title" placeholder="Title" required/>
+            <button type="submit" class="btn" id="add">Remove Movie</button>
+        </form>
+        <h2>Movies Available</h2>
+        <div id="movies"></div>
+    </body>
+    
+    <script src='movies_control/control.js'></script>
+</html>

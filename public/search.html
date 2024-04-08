@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Search</title>
+    </head>
+    <body>
+        <h1>Search</h1>
+        <form class="inputContainer" id="search_form" action="/play-movie" method="post">
+            <input type="text" id="title" name="title" placeholder="Search for a movie">
+            <button type="submit" id="searchButton">Search</button>
+        </form>
+        <br/>
+        <h1>Movies available:</h1>
+        <br/>
+        <div id="movies"></div>
+        <script src="search.js"></script>
+    </body>
+</html>
