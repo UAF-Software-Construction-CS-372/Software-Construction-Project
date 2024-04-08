@@ -1,1 +1,6 @@
-﻿
+﻿body {
+    min-height: 100vh;
+    background-color: rgb(131, 63, 0);
+    background-size: cover;
+    background-position: center;
+}
