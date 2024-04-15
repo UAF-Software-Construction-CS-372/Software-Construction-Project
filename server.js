@@ -176,19 +176,22 @@ app.post('/movie-likes', bodyParser.json(), async (req, res) => {
     title: req.body.title
   });
 
+  console.log(`Movie found: ${movie_like}`);
+  console.log(`Movie title: ${movie_like[0].title}`);
+
   if (movie_like.length != 1){
     res.status(400).json({success: false, message: `Cannot find movie: ${req.body.title}`}).send();
     return;
   }
 
-  if (movie_like.likes.includes(req.body.user))
+  if (movie_like[0].likes.includes(req.body.user))
   {
     res.status(400).json({success: false, message: `User ${req.body.user} has already liked this video.`}).send();
     return;
   }
 
-  await movie_like.save();
-  movie_like.likes.push(req.body.user);
+  await movie_like[0].save();
+  movie_like[0].likes.push(req.body.user);
   console.log(`New like added.`);
   res.status(200).json({success: true}).send();
 });
