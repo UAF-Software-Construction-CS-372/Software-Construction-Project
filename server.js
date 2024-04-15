@@ -85,7 +85,7 @@ app.post('/login', parser, async (req, res) => {
   } else if (found[0].class === "content creator") {
     res.status(200).redirect('/add');
   } else if (found[0].class === "marketing manager") {
-    res.status(200).sendFile(__dirname + '/public/marketing.html');
+    res.status(200).sendFile(__dirname + '/public/movies_control/feedback.html');
   } else {
     res.status(400).json({success: false, message: "No correct class assigned to user!"}).send();
   }
@@ -181,14 +181,14 @@ app.post('/movie-likes', bodyParser.json(), async (req, res) => {
     return;
   }
 
-  if (movie_like.likes.includes(req.body.user))
+  if (movie_like[0].likes.includes(req.body.user))
   {
     res.status(400).json({success: false, message: `User ${req.body.user} has already liked this video.`}).send();
     return;
   }
 
-  await movie_like.save();
-  movie_like.likes.push(req.body.user);
+  await movie_like[0].save();
+  movie_like[0].likes.push(req.body.user);
   console.log(`New like added.`);
   res.status(200).json({success: true}).send();
 });
@@ -206,7 +206,49 @@ app.post('movie-comments', parser , async (req, res) => {
 
   await new_comment.save();
   res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
-})
+});
+
+app.post('/feedback', parser, async (req, res) => {
+  console.log(`Feedback: ${req.body.user} -> ${req.body.title}`);
+
+  const new_feedback = new Feedback({
+    feedback: req.body.feedback
+  })
+
+  const dom = new JSDOM(data);
+  const movies_element = dom.window.document.querySelector('#movies');
+
+  const movies = await Movie.find({});
+
+  Array.from(movies).forEach(movie => {
+    const movie_element = dom.window.document.createElement('div');
+    movie_element.innerHTML = `<h2>${movie.title}</h2><p>${movie.genre}</p>`;
+    movies_element.appendChild(movie_element);
+  });
+
+  const likes_element = dom.window.document.querySelector('#likes');
+
+  Array.from(likes).forEach(movie => {
+    const likes_element = dom.window.document.createElement('div');
+    likes_element.innerHTML = `<p>${movie.likes[0]}</p>`;
+    likes_element.appendChild(likes_element);
+  });
+
+  const comments_element = dom.window.document.querySelector('#comments');
+
+  Array.from(likes).forEach(movie => {
+    const comments_element = dom.window.document.createElement('div');
+    comments_element.innerHTML = `<p>${movie.comments[0]}</p>`;
+    comments_element.appendChild(likes_element);
+  });
+
+  await new_feedback.save();
+  res.sendFile(__dirname + '/public/movies_control/feedback.html')
+
+  // Send the modified HTML
+  res.send(dom.serialize());
+  return;
+});
 
 app.post('/play-movie', parser, async (req, res) => {
   console.log(`Searching for movie ${req.body.title}`)
