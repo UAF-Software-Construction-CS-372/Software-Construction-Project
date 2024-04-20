@@ -10,7 +10,7 @@ const sha256 = require('js-sha256');
 
 const port = 8080;
 const app = express();
-const mongo_uri = "mongodb://localhost:27017/movies";
+const mongo_uri = "mongodb://db:27017/movies";
 
 var parser = bodyParser.urlencoded({ extended: false });
 
@@ -176,19 +176,22 @@ app.post('/movie-likes', bodyParser.json(), async (req, res) => {
     title: req.body.title
   });
 
+  console.log(`Movie found: ${movie_like}`);
+  console.log(`Movie title: ${movie_like[0].title}`);
+
   if (movie_like.length != 1){
     res.status(400).json({success: false, message: `Cannot find movie: ${req.body.title}`}).send();
     return;
   }
 
-  if (movie_like.likes.includes(req.body.user))
+  if (movie_like[0].likes.includes(req.body.user))
   {
     res.status(400).json({success: false, message: `User ${req.body.user} has already liked this video.`}).send();
     return;
   }
 
-  await movie_like.save();
-  movie_like.likes.push(req.body.user);
+  await movie_like[0].save();
+  movie_like[0].likes.push(req.body.user);
   console.log(`New like added.`);
   res.status(200).json({success: true}).send();
 });
@@ -243,7 +246,7 @@ app.post('/play-movie', parser, async (req, res) => {
 
 app.listen(port, async () => {
   try {
-      console.log('Connecting to MongoDB...');
+      console.log('Connecting to MongoDB:', mongo_uri);
       await mongoose.connect(mongo_uri);
       console.log('Successfully connected to MongoDB!');
   } catch (error) {
