@@ -10,7 +10,7 @@ const sha256 = require('js-sha256');
 
 const port = 8080;
 const app = express();
-const mongo_uri = "mongodb://localhost:27017/movies";
+const mongo_uri = "mongodb://db:27017/movies";
 
 var parser = bodyParser.urlencoded({ extended: false });
 
@@ -246,7 +246,7 @@ app.post('/play-movie', parser, async (req, res) => {
 
 app.listen(port, async () => {
   try {
-      console.log('Connecting to MongoDB...');
+      console.log('Connecting to MongoDB:', mongo_uri);
       await mongoose.connect(mongo_uri);
       console.log('Successfully connected to MongoDB!');
   } catch (error) {
