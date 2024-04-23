@@ -187,9 +187,9 @@ app.post('/movie-likes', bodyParser.json(), async (req, res) => {
     return;
   }
 
-  await movie_like[0].save();
   movie_like[0].likes.push(req.body.user);
   console.log(`New like added.`);
+  await movie_like[0].save();
   res.status(200).json({success: true}).send();
 });
 
@@ -197,7 +197,7 @@ app.get('/likes', parser, async (req, res) => {
   res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
 });
 
-app.post('movie-comments', parser , async (req, res) => {
+app.post('/movie-comments', parser , async (req, res) => {
   console.log(`Add new comment`)
   
   const new_comment = new Comment({
