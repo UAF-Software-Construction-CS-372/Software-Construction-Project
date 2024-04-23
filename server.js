@@ -10,7 +10,7 @@ const sha256 = require('js-sha256');
 
 const port = 8080;
 const app = express();
-const mongo_uri = "mongodb://db:27017/movies";
+const mongo_uri = "mongodb://localhost:27017/movies";
 
 var parser = bodyParser.urlencoded({ extended: false });
 
