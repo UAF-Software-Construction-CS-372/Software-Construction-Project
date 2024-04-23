@@ -28,7 +28,7 @@ const movie_schema = new mongoose.Schema({
   genre: {type: String, required: true},
   link: {type: String, required: true},
   likes: {type: Array, required: true},
-  feedback: {type: String, required: true},
+  feedback: {type: String, required: false},
   comments: {type: Array, required: true},
 });
 
@@ -228,6 +228,7 @@ app.post('/feedback', parser, async (req, res) => {
 
   const likes_element = dom.window.document.querySelector('#likes');
 
+  // fix
   Array.from(likes).forEach(movie => {
     const likes_element = dom.window.document.createElement('div');
     likes_element.innerHTML = `<p>${movie.likes[0]}</p>`;
@@ -236,6 +237,7 @@ app.post('/feedback', parser, async (req, res) => {
 
   const comments_element = dom.window.document.querySelector('#comments');
 
+  // fix
   Array.from(likes).forEach(movie => {
     const comments_element = dom.window.document.createElement('div');
     comments_element.innerHTML = `<p>${movie.comments[0]}</p>`;
