@@ -1,11 +1,11 @@
 ﻿const express = require('express');
 const bodyParser = require('body-parser');
-const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require('cors');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
+const sha256 = require('js-sha256');
 
 
 const port = 8080;
@@ -17,7 +17,8 @@ var parser = bodyParser.urlencoded({ extended: false });
 const user_schema = new mongoose.Schema({
   user: {type: String, required: true, minLength: 4, lowercase: true, unique: true},
   pass: {type: String, required: true, minLength: 8},
-  incorrects: {type: Number, required: true}
+  incorrects: {type: Number, required: true},
+  class: {type: String, required: true},
 });
 
 const User = mongoose.model('user', user_schema);
@@ -26,8 +27,9 @@ const movie_schema = new mongoose.Schema({
   title: {type: String, required: true},
   genre: {type: String, required: true},
   link: {type: String, required: true},
-  likes: {type: Array, required: false},
+  likes: {type: Array, required: true},
   feedback: {type: String, required: false},
+  comments: {type: Array, required: true},
 });
 
 const Movie = mongoose.model('movie', movie_schema);
@@ -35,6 +37,8 @@ const Movie = mongoose.model('movie', movie_schema);
 app.use(express.static("public"), cors({origin:'*'}));
 
 app.post('/login', parser, async (req, res) => {
+  console.log(`Attempting login: ${JSON.stringify(req.body)}`)
+
   // Check if user already exists
   const found = await User.find({user: req.body.user});
   if (found.length !== 1) {
@@ -44,7 +48,7 @@ app.post('/login', parser, async (req, res) => {
 
   const user = found[0];
 
-  if (user.pass !== req.body.pass) {
+  if (user.pass !== sha256(req.body.pass)) {
     if (user.incorrects > 1) {
       await User.updateOne({user: user.user}, {$set: {incorrects: user.incorrects - 1}});
       res.status(400).json({success: false, message: `Login failed! ${user.incorrects - 1} tries left!`}).send();
@@ -54,7 +58,38 @@ app.post('/login', parser, async (req, res) => {
     }
     return;
   }
-  res.status(200).sendFile(__dirname + '/public/search.html');
+
+  if (found[0].class === "viewer") {
+    fs.readFile('public/search.html', 'utf8', async (err, data) => {
+      if (err) {
+          console.error(err);
+          res.status(400).json({ success: false, message: 'An error occurred while loading a file.'}).send();
+          return;
+      }
+
+      const dom = new JSDOM(data);
+      const movies_element = dom.window.document.querySelector('#movies');
+
+      const movies = await Movie.find({});
+
+      Array.from(movies).forEach(movie => {
+        const movie_element = dom.window.document.createElement('div');
+        movie_element.innerHTML = `<h2>${movie.title}</h2><p>${movie.genre}</p>`;
+        movies_element.appendChild(movie_element);
+      });
+
+      // Send the modified HTML
+      res.send(dom.serialize());
+      return;
+    });
+  } else if (found[0].class === "content creator") {
+    res.status(200).redirect('/add');
+  } else if (found[0].class === "marketing manager") {
+    res.status(200).sendFile(__dirname + '/public/movies_control/feedback.html');
+  } else {
+    res.status(400).json({success: false, message: "No correct class assigned to user!"}).send();
+  }
+  return;
 });
 
 app.post('/signup', parser, async (req, res) => {
@@ -68,8 +103,9 @@ app.post('/signup', parser, async (req, res) => {
   // Create new user
   const new_user = new User({
     user: req.body.user,
-    pass: req.body.pass,
-    incorrects: 5
+    pass: sha256(req.body.pass),
+    incorrects: 5,
+    class: "viewer"
   });
 
   // Push user to database
@@ -93,43 +129,66 @@ app.post('/movie-add', parser, async (req, res) => {
       genre: req.body.genre,
       link: req.body.link,
       likes: [],
+      feedback: "",
+      comments: []
     });
   
     // Push user to database
     await new_movie.save();
-    res.sendFile(__dirname + '/public/movies_control/add_movies.html');
+    res.status(200).json({success: true, message: `Movie ${req.body.title} added!`}).send();
 });
 
 app.post('/movie-delete', parser, async (req, res) => {
   console.log(`Recieved movie deletion request: ${JSON.stringify(req.body)}`)
-  Movie.deleteOne({title: req.body.title});
+  await Movie.deleteMany({title: req.body.title});
   res.status(200).json({success: true, message: `Movie ${req.body.title} deleted!`}).send();
 });
 
 app.get('/add', parser , async (req, res) => {
-  res.sendFile(__dirname + '/public/movies_control/add_movies.html');
+  fs.readFile('public/movies_control/control_movies.html', 'utf8', async (err, data) => {
+    if (err) {
+        console.error(err);
+        res.status(400).json({ success: false, message: 'An error occurred while loading a file.'}).send();
+        return;
+    }
+
+    const dom = new JSDOM(data);
+    const movies_element = dom.window.document.querySelector('#movies');
+
+    const movies = await Movie.find({});
+
+    Array.from(movies).forEach(movie => {
+      const movie_element = dom.window.document.createElement('div');
+      movie_element.innerHTML = `<h2>${movie.title}</h2><p>${movie.genre}</p>`;
+      movies_element.appendChild(movie_element);
+    });
+
+    // Send the modified HTML
+    res.send(dom.serialize());
+    return;
+  });
 });
 
-app.post('/movie-likes', parser , async (req, res) => {
-  console.log(`Add new like`)
+app.post('/movie-likes', bodyParser.json(), async (req, res) => {
+  console.log(`Adding new like: ${req.body.user} -> ${req.body.title}`);
 
   const movie_like = await Movie.find({
     title: req.body.title
   });
 
   if (movie_like.length != 1){
-    res.status(400).json({success: false, message: 'Can not find movie.'}).send();
+    res.status(400).json({success: false, message: `Cannot find movie: ${req.body.title}`}).send();
     return;
   }
 
-  if (movie_like.likes.has(req.body.user))
+  if (movie_like[0].likes.includes(req.body.user))
   {
-    res.status(400).json({success: false, message: 'User has already liked this video.'}).send();
+    res.status(400).json({success: false, message: `User ${req.body.user} has already liked this video.`}).send();
     return;
   }
 
-  await movie_like.save();
-  movie_like.likes.push(req.body.user);
+  await movie_like[0].save();
+  movie_like[0].likes.push(req.body.user);
   console.log(`New like added.`);
   res.status(200).json({success: true}).send();
 });
@@ -147,13 +206,54 @@ app.post('movie-comments', parser , async (req, res) => {
 
   await new_comment.save();
   res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
-})
+});
 
-app.get('/comments', parser, async (req, res) => {
-  res.sendFile(__dirname + '/public/movies_control/moviePlayer.html');
+app.post('/feedback', parser, async (req, res) => {
+  console.log(`Feedback: ${req.body.user} -> ${req.body.title}`);
+
+  const new_feedback = new Feedback({
+    feedback: req.body.feedback
+  })
+
+  const dom = new JSDOM(data);
+  const movies_element = dom.window.document.querySelector('#movies');
+
+  const movies = await Movie.find({});
+
+  Array.from(movies).forEach(movie => {
+    const movie_element = dom.window.document.createElement('div');
+    movie_element.innerHTML = `<h2>${movie.title}</h2><p>${movie.genre}</p>`;
+    movies_element.appendChild(movie_element);
+  });
+
+  const likes_element = dom.window.document.querySelector('#likes');
+
+  // fix
+  Array.from(likes).forEach(movie => {
+    const likes_element = dom.window.document.createElement('div');
+    likes_element.innerHTML = `<p>${movie.likes[0]}</p>`;
+    likes_element.appendChild(likes_element);
+  });
+
+  const comments_element = dom.window.document.querySelector('#comments');
+
+  // fix
+  Array.from(likes).forEach(movie => {
+    const comments_element = dom.window.document.createElement('div');
+    comments_element.innerHTML = `<p>${movie.comments[0]}</p>`;
+    comments_element.appendChild(likes_element);
+  });
+
+  await new_feedback.save();
+  res.sendFile(__dirname + '/public/movies_control/feedback.html')
+
+  // Send the modified HTML
+  res.send(dom.serialize());
+  return;
 });
 
 app.post('/play-movie', parser, async (req, res) => {
+  console.log(`Searching for movie ${req.body.title}`)
   // Verify we have the movie
   const found = await Movie.find({title: req.body.title});
   if (found.length == 0) {
@@ -170,12 +270,15 @@ app.post('/play-movie', parser, async (req, res) => {
 
       const dom = new JSDOM(data);
       const video = dom.window.document.querySelector('#player');
+      const movie_name = dom.window.document.querySelector('#movie_name');
 
       // Get movie link
       const link = found[0].link;
 
       // Set the src attribute of the video element
       video.setAttribute('src', link);
+
+      movie_name.innerHTML = req.body.title;
 
       // Send the modified HTML
       res.send(dom.serialize());

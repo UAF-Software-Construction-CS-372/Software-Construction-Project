@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="movies_control/feedback.css">
+
+        <title>
+            CS 372 - Feedback!
+        </title>
+    </head>
+
+    <body>
+        <h1>Add Movies</h1>
+        <form class="form" id="movie_feedback" action="/feedback" method="post">
+            <input type="text" class="form_input" id="feedback" name="feedback" placeholder="Feedback" required/>
+            <button type="submit" class="btn" id="add">Add Movie</button>
+        </form>
+        <h2>Movies Available</h2>
+        <div id="movies"></div>
+        <div id="likes"></div>
+        <div id="comments"></div>
+    </body>
+    
+    <script src='movies_control/feedback.js'></script>
+</html>

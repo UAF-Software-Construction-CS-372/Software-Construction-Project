@@ -1,20 +1,20 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
-    const putForm = document.querySelector("#put_movie");
+document.addEventListener("DOMContentLoaded", () => {
+    const feedbackForm = document.querySelector("#feedback_form");
 
-    putForm.addEventListener("submit", e => {
+    searchForm.addEventListener("submit", e => {
         e.preventDefault();
 
         // Use fetch to send the form data
-        fetch(putForm.getAttribute('action'), {
+        fetch(feedbackForm.getAttribute('action'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams(new FormData(putForm))
+            body: new URLSearchParams(new FormData(feedbackForm))
         })
         .then(async data => {
             const response = await data.json();
-            if (!response.success) {
+            if (response.message !== null) {
                 alert(response.message);
             }
             console.log(response);

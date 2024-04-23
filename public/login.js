@@ -82,6 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: new URLSearchParams(new FormData(loginForm))
             })
             .then(async data => {
+                
+
+                localStorage.setItem('username', username);
+
                 const headers = data.headers;
 
                 if (headers.get('Content-Type').includes('text/html')) {
